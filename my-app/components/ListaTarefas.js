@@ -1,93 +1,39 @@
-import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  View,
-  FlatList,
-} from 'react-native';
-
-// Componente para exibir a lista de tarefas
-function ListaTarefas({ lista }) {
-  return (
-    <FlatList
-      data={lista}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <View style={styles.item}>
-          <Text style={styles.textoItem}>📝 {item.nome}</Text>
+import React from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+ 
+type Item = {
+  nome: string;
+  valor: string;
+};
+ 
+type ListaComprasProps = {
+  itens: Item[];
+  removerItem: (index: number) => void;
+};
+ 
+const ListaCompras: React.FC<ListaComprasProps> = ({ itens, removerItem }) => (
+  <FlatList
+    data={itens}
+    keyExtractor={(_, index) => index.toString()}
+    renderItem={({ item, index }) => (
+      <View style={styles.itemContainer}>
+        <View>
+          <Text style={styles.itemText}>{item.nome}</Text>
+          <Text style={styles.valorText}>Valor: R$ {item.valor}</Text>
         </View>
-      )}
-    />
-  );
-}
-
-export default function App() {
-  const [tarefa, setTarefa] = useState('');
-  const [lista, setLista] = useState([]);
-
-  const adicionarTarefa = () => {
-    if (tarefa.trim() === '') return;
-
-    const novaTarefa = {
-      id: Date.now().toString(),
-      nome: tarefa,
-    };
-
-    setLista([...lista, novaTarefa]);
-    setTarefa('');
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.titulo}>🗓️ Afazeres do Dia</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="O que precisa ser feito?"
-        value={tarefa}
-        onChangeText={setTarefa}
-      />
-
-      <Button title="Adicionar Tarefa" onPress={adicionarTarefa} color="#4CAF50" />
-
-      <ListaTarefas lista={lista} />
-    </SafeAreaView>
-  );
-}
-
+        <TouchableOpacity onPress={() => removerItem(index)}>
+          <Text style={styles.removeButton}>Remover</Text>
+        </TouchableOpacity>
+      </View>
+    )}
+  />
+);
+ 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FAFAFA',
-    paddingTop: 50,
-    paddingHorizontal: 20,
-  },
-  titulo: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
-  },
-  input: {
-    borderColor: '#999',
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 12,
-    backgroundColor: '#FFF',
-  },
-  item: {
-    backgroundColor: '#E8F5E9',
-    padding: 12,
-    marginVertical: 4,
-    borderRadius: 5,
-  },
-  textoItem: {
-    fontSize: 16,
-    color: '#2E7D32',
-  },
+  itemContainer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  itemText: { fontSize: 16 },
+  valorText: { fontSize: 14, color: '#555' },
+  removeButton: { color: 'red' },
 });
+ 
+export default ListaCompras;
